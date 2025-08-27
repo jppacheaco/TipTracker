@@ -1,4 +1,5 @@
 import { useState } from "react";
+import './App.css';
 
 // ---- helpers: week/shift math ----
 
@@ -82,37 +83,25 @@ export default function App() {
 
 function RecordConfirm({ suggestedShift, selectedShift, setSelectedShift, onBack, onContinue }) {
   // Build numeric options: 1..currentShift
-  const currentShift = suggestedShift;
-  const options = Array.from({ length: currentShift }, (_, i) => i + 1);
+  // const currentShift = suggestedShift;
+  const options = Array.from({ length: suggestedShift }, (_, i) => i + 1);
 
   return (
     <div>
-      <h2>Is this for shift {suggestedShift}?</h2>
+      <h2>Select Shift</h2>
 
-      <div className="button-row">
-        <button
-          onClick={() => {
-            setSelectedShift(suggestedShift);
-            onContinue();
-          }}
+      <div className="buttons">
+        <select
+          value={selectedShift}
+          onChange={(e) => setSelectedShift(Number(e.target.value))}
         >
-          Yes
-        </button>
 
-        <div className="row">
-          <label htmlFor="shiftSelect"><strong>Change to:</strong></label>
-          <select
-            id="shiftSelect"
-            value={selectedShift}
-            onChange={(e) => setSelectedShift(Number(e.target.value))}
-          >
-            {options.map((n) => (
-              <option key={n} value={n}>Shift {n}</option>
-            ))}
-          </select>
-          <button onClick={onContinue}>Use Selected</button>
-        </div>
+        {options.map((n) => (
+          <option key={n} value={n}>Shift {n}</option>
+        ))}
 
+        </select>
+        <button onClick={onContinue}>Confirm</button>
         <button onClick={onBack}>Back</button>
       </div>
     </div>

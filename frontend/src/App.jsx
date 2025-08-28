@@ -42,11 +42,17 @@ export default function App() {
   // Suggested shift based on "now"
   const suggested = getShiftForDate();
   const [selectedShift, setSelectedShift] = useState(suggested.shiftNumber);
+  const [dailyTotal, setDailyTotal] = useState(0);
+  const [shiftTotal, setShiftTotal] = useState(0);
+  const [AMTotal, setAMTotal] = useState(0);
+
+
 
   return (
     <div style={{ padding: 20, maxWidth: 600, margin: "0 auto" }}>
       <h1>Select Option</h1>
 
+      {/* main menu view */}
       {view === "menu" && (
         <div className="buttons">
           <button onClick={() => { setSelectedShift(getShiftForDate().shiftNumber); setView("record"); }}>
@@ -57,25 +63,66 @@ export default function App() {
         </div>
       )}
 
+      {/* when Record Tips is selected */}
       {view === "record" && (
         <RecordConfirm
           suggestedShift={suggested.shiftNumber}
           selectedShift={selectedShift}
           setSelectedShift={setSelectedShift}
           onBack={() => setView("menu")}
-          onContinue={() => {
-            // Replace this with your actual "Record Tips" form navigation
-            alert(`Proceeding with Shift ${selectedShift}`);
-          }}
+          //once the shift is confirmed, go to daily total screen
+          onContinue={() => setView("dailyTotal")}
         />
       )}
 
+      {/* to edit previous shift tips */}
       {view === "edit" && (
         <SimpleScreen title="Edit Previous Tips (coming soon)" onBack={() => setView("menu")} />
       )}
 
+      {/* to get weekly total */}
       {view === "total" && (
         <SimpleScreen title="Weekly Totals (coming soon)" onBack={() => setView("menu")} />
+      )}
+
+      {/* get daily total */}
+      {view === "dailyTotal" && (
+        <div>
+          <h2>Please enter your daily total</h2>
+
+          <div className="buttons">
+          <input
+            // type="number"
+            value={dailyTotal}
+            onChange={(e) => {
+              const value = Number(e.target.value); // convert string -> number
+              setDailyTotal(value);
+
+              //set the correct tips per shift
+              if (selectedShift % 2 === 1) {
+                // AM shift
+                setShiftTotal(value);
+                setAMTotal(value);
+              } else {
+                const pmPortion = Math.max(0, value - AMTotal);
+                setShiftTotal(pmPortion);
+              }
+            }}
+            placeholder="Enter total tips"
+            style={{ width: "100%", maxWidth: "300px", padding: "10px", fontSize: "16px" }}
+            // alert("Value recorder is ${dailyTotal}");
+          />
+
+            <button onClick={() => setView("selectEmployee")}>Continue</button>
+            <button onClick={() => setView("record")}>Back</button>
+          </div>
+        </div>
+      )}
+
+      
+      {/* select employees to record tips for */}
+      {view === "selectEmployee" && (
+        <SimpleScreen title={`Select Employees for Shift ${selectedShift} to allocate $${shiftTotal} (coming soon)`} onBack={() => setView("record")} />
       )}
     </div>
   );
